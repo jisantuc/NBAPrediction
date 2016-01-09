@@ -1,0 +1,10 @@
+numpy
+matplotlib
+scipy
+scikit-learn
+pandas==0.16.2
+six
+requests[security]
+patsy
+progress
+
