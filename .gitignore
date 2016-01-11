@@ -55,3 +55,18 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# PyCharm files
+.idea/*
+
+# credentials for things
+api_key.txt
+creds.cfg
+
+# virtualenv
+venv/*
+
+# output locations
+data/*
+prediction_info/*
+output/*

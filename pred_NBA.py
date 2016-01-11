@@ -25,13 +25,14 @@ def run(season, method):
 
     sp = SpreadPredictor(season=season, method=method)
     sp.tune_model()
+    datestr = dt.datetime.today().strftime('%Y%m%d')
     sp.raw_oos_pred().to_csv(
-        'prediction_info/preds_{}.csv'.format(
-            dt.datetime.today().strftime('%Y%m%d')
-        )
+        'prediction_info/preds_{}oos.csv'.format(datestr)
+    )
+    sp.raw_ins_pred().to_csv(
+        'prediction_info/preds_{}ins.csv'.format(datestr)
     )
     return sp.new_predictions()
-    # sp.plot_test_error(pen_params=params[method])
 
 
 class FeatureMaker(object):
@@ -668,7 +669,6 @@ class SpreadPredictor(object):
             self.data['real_spread'] < self.data['t.ats_margin']
         ).astype(int)
         self.data = self.data[self.data['t.site'] == 'home']
-        print self.data.head()
 
         # read upcoming games to data
         self.to_predict = ug.main().sort().reindex(
@@ -858,31 +858,37 @@ class SpreadPredictor(object):
         else:
             _non_forest_plot(self, pen_params)
 
-    def raw_oos_pred(self):
+    def _raw_pred(self, oos):
         if not self.bestmod:
             raise ValueError('Model not yet trained. Run sp.tune_model()')
 
-        ind = self.clean_X.index
-        clean_oos_preds = pd.Series(
-            self.bestmod.predict(self.clean_X),
+        data = {
+            'oos': self.clean_X,
+            'ins': self.dirty_X
+        }['oos' if oos else 'ins']
+        X = data
+        preds = pd.Series(
+            self.bestmod.predict(X),
             name='prediction',
-            index=self.clean_X.index
+            index=X.index
         )
-
-        print type(clean_oos_preds)
-        print clean_oos_preds.head()
 
         return pd.concat(
             [
                 self.data.loc[
-                    ind,
+                    X.index,
                     ['t.ats_margin', 'real_spread', 'cover', 'o.team']
                 ],
-                clean_oos_preds
+                preds
             ],
             axis=1
         )
 
+    def raw_oos_pred(self):
+        return self._raw_pred(oos=True)
+
+    def raw_ins_pred(self):
+        return self._raw_pred(oos=False)
 
     def oos_score(self):
         """
