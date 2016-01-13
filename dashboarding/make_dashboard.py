@@ -104,18 +104,15 @@ p3.rect(x='prediction', y='rect_centers', width=0.75, height='accuracy',
         source=source3)
 
 # add interaction for Select
-def get_source_1(train_or_test):
-    global data
+def get_source_1(train_or_test, data=data):
     dataset = data[data['type'] == train_or_test].copy()
     source1.data = accuracy_by(dataset, 'season').to_dict(orient='list')
 
-def get_source_2(train_or_test):
-    global data
+def get_source_2(train_or_test, data=data):
     dataset = data[data['type'] == train_or_test].copy()
     source2.data = accuracy_by(dataset, 'ats_margin').to_dict(orient='list')
 
-def get_source_3(train_or_test):
-    global data
+def get_source_3(train_or_test, data=data):
     dataset = data[data['type'] == train_or_test].copy()
     xtab3 = pd.crosstab(index=dataset['prediction'],
                         columns=dataset['cover'],
