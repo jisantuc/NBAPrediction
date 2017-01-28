@@ -1,3 +1,6 @@
+**DEPRECATION NOTICE**: This project is dead. Someday it may learn to use
+the `stats.nba.com` API but until then it's just dead.
+
 NBA Spread Predictor
 ====================
 
